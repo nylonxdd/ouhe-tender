@@ -435,6 +435,8 @@
 <div class="toast" id="toast"><i class="ti ti-check"></i> <span id="toastMsg"></span></div>
 
 <script>
+const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSJnxw0uNfC_Gm7ZbaiJF6Shmm8uDe6EF11coWwpGyCcrrixCdv4SRsOXkLNgcwFzmz9LyAnEDPqnJv/pub?output=csv';
+
 const PLATFORMS = {
   ceec: { label:'能建', cls:'dot-ceec' },
   ceb:  { label:'招标', cls:'dot-ceb'  },
@@ -444,18 +446,42 @@ const PLATFORMS = {
   czr:  { label:'采招', cls:'dot-czr'  },
 };
 
-let tenders = [
-  { id:1, title:'几内亚西芒杜铁矿铁路沿线劳务人员配置及全流程托管服务采购', platform:'ceec', deadline:'2026-05-14', region:'几内亚·非洲', scope:'intl', tags:['rail','intl'], extraTags:['铁路维保'], addedMonth:5, url:'http://ec.ceec.net.cn/' },
-  { id:2, title:'泰国长安汽车罗勇府工厂投产期人力资源外包暨属地人才配置服务', platform:'ceb',  deadline:'2026-05-17', region:'泰国·APEC', scope:'intl', tags:['energy','intl'], extraTags:['EOR·制造'], addedMonth:5, url:'http://www.cebpubservice.com/' },
-  { id:3, title:'中车集团铁路货车定期维保作业人员劳务派遣及管理咨询框架协议', platform:'crec', deadline:'2026-05-20', region:'上海·国内', scope:'dom', tags:['rail','dom'], extraTags:['维保·派遣'], addedMonth:5, url:'https://www.chinabidding.com.cn/' },
-  { id:4, title:'爱达·花城号邮轮甲板部门技术人员招募及船员管理外包服务采购',  platform:'ceec', deadline:'2026-05-25', region:'上海·国内', scope:'dom', tags:['ship','dom'], extraTags:['船舶·RPO'], addedMonth:5, url:'http://ec.ceec.net.cn/' },
-  { id:5, title:'印尼南山铝业民丹岛项目属地员工技能培训及HRBP顾问服务',       platform:'ceb',  deadline:'2026-05-29', region:'印尼·APEC', scope:'intl', tags:['energy','intl'], extraTags:['HRBP·培训'], addedMonth:5, url:'http://www.cebpubservice.com/' },
-  { id:6, title:'上汽集团新能源车型生产线灵活用工及季节性外包整体解决方案',   platform:'qlm',  deadline:'2026-06-02', region:'上海·国内', scope:'dom', tags:['energy','dom'], extraTags:['灵活用工'], addedMonth:5, url:'https://www.qianlima.com/' },
-  { id:7, title:'宝武集团低碳冶金人才体系建设咨询及绿色制造ESG人才输送服务', platform:'czr',  deadline:'2026-06-08', region:'上海·国内', scope:'dom', tags:['esg','dom'], extraTags:['ESG·咨询'], addedMonth:5, url:'https://www.czcg.com/' },
-  { id:8, title:'中铁建新能源装备制造基地现场用工外包及智能制造人才输送协议', platform:'czrj', deadline:'2026-06-15', region:'宁夏·国内', scope:'dom', tags:['rail','energy','dom'], extraTags:['智能制造'], addedMonth:5, url:'https://www.chinabidding.com.cn/' },
-];
-let nextId = 9;
+let tenders = [];
 let currentFilter = 'all';
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+  return lines.slice(1).map((line, i) => {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let c of line) {
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += c;
+    }
+    cols.push(cur.trim());
+    const obj = {};
+    headers.forEach((h, idx) => obj[h] = (cols[idx]||'').replace(/^"|"$/g,'').trim());
+    const scope = obj.scope || 'dom';
+    const tags = (obj.tags||'').split(/[,\s]+/).filter(Boolean);
+    if (!tags.includes(scope)) tags.push(scope);
+    return { id:i+1, title:obj.title||'', platform:obj.platform||'czr',
+      deadline:obj.deadline||'', region:obj.region||'', scope, tags,
+      extraTags:[], url:obj.url||'', addedMonth:new Date().getMonth()+1 };
+  }).filter(t => t.title);
+}
+
+async function loadFromSheet() {
+  try {
+    const res = await fetch(SHEET_CSV);
+    const text = await res.text();
+    tenders = parseCSV(text);
+    render();
+  } catch(e) {
+    document.getElementById('emptyState').style.display = 'block';
+  }
+}
 
 function daysLeft(dateStr) {
   const d = new Date(dateStr);
@@ -562,27 +588,8 @@ function closeModalOutside(e) {
 }
 
 function submitTender() {
-  const title = document.getElementById('f-title').value.trim();
-  const deadline = document.getElementById('f-deadline').value;
-  if (!title || !deadline) { showToast('请填写标项名称及截止日期'); return; }
-  const platform = document.getElementById('f-platform').value;
-  const region   = document.getElementById('f-region').value.trim() || '待确认';
-  const scope    = document.getElementById('f-scope').value;
-  const tagsRaw  = document.getElementById('f-tags').value.split(',').map(s=>s.trim()).filter(Boolean);
-  const url = document.getElementById('f-url').value.trim();
-  const tags = [scope];
-  const map = { '铁路':'rail', '船舶':'ship', '能源':'energy', '电力':'energy', 'ESG':'esg', '咨询':'esg' };
-  tagsRaw.forEach(t => { Object.keys(map).forEach(k => { if(t.includes(k)) tags.push(map[k]); }); });
-  const now = new Date();
-  tenders.push({
-    id: nextId++, title, platform, deadline, region, scope,
-    tags: [...new Set(tags)], extraTags: tagsRaw.slice(0,2), url: url || '',
-    addedMonth: now.getMonth() + 1
-  });
+  showToast('请直接在 Google 表格里新增一行，刷新页面即可更新 ↗');
   closeModal();
-  render();
-  showToast('标项已成功新增！');
-  ['f-title','f-region','f-tags','f-url'].forEach(id => document.getElementById(id).value = '');
 }
 
 function showToast(msg) {
@@ -600,7 +607,7 @@ function updateTime() {
 }
 setInterval(updateTime, 1000);
 updateTime();
-render();
+loadFromSheet();
 </script>
 </body>
 </html>
