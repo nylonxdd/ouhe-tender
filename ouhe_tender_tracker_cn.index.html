@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>招标信息跟踪平台 · 上海藕荷信息科技</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --teal: #1D9E75;
+    --teal-light: #5DCAA5;
+    --teal-dark: #0F6E56;
+    --teal-pale: #E1F5EE;
+    --teal-border: #9FE1CB;
+    --bg: #0f1117;
+    --bg2: #161b24;
+    --bg3: #1c2333;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8eaf0;
+    --text2: #8b92a5;
+    --text3: #5a6070;
+    --red: #E24B4A;
+    --amber: #EF9F27;
+    --blue: #378ADD;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 15px; }
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+  }
+
+  /* ── 顶部导航 ── */
+  .nav {
+    background: var(--bg2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 1.5rem;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 17px; flex-shrink: 0;
+  }
+  .nav-title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .nav-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-time { font-size: 12px; color: var(--text2); }
+  .badge-live {
+    font-size: 11px; padding: 3px 10px;
+    background: rgba(29,158,117,0.15);
+    color: var(--teal-light);
+    border: 0.5px solid rgba(93,202,165,0.3);
+    border-radius: 999px;
+  }
+
+  /* ── 布局 ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem; }
+
+  /* ── 数据统计 ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+  .stat-label { font-size: 11px; color: var(--text2); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+  .stat-label i { font-size: 13px; }
+  .stat-value { font-size: 22px; font-weight: 700; }
+  .stat-value.teal { color: var(--teal-light); }
+  .stat-value.red { color: var(--red); }
+  .stat-delta { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  /* ── 筛选栏 ── */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.9rem;
+  }
+  .section-label {
+    font-size: 11px; font-weight: 500; color: var(--text2);
+    letter-spacing: 0.06em;
+  }
+  .filter-row {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem;
+  }
+  .filter-btn {
+    font-size: 12px; padding: 5px 13px;
+    border: 0.5px solid var(--border2);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .filter-btn.active {
+    background: var(--teal); color: #fff; border-color: var(--teal);
+  }
+  .filter-btn:hover:not(.active) {
+    background: var(--bg3); color: var(--text); border-color: var(--border2);
+  }
+
+  /* ── 标项卡片 ── */
+  .tender-list { display: flex; flex-direction: column; gap: 8px; }
+  .tender-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.15rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 0 12px;
+    align-items: start;
+  }
+  .tender-card:hover {
+    border-color: rgba(93,202,165,0.35);
+    background: var(--bg3);
+    transform: translateY(-1px);
+  }
+  .tender-card.urgent { border-left: 3px solid var(--red); }
+  .tender-card.soon   { border-left: 3px solid var(--amber); }
+  .tender-card.normal { border-left: 3px solid var(--teal); }
+
+  .platform-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .dot-ceec  { background: rgba(55,138,221,0.15); color: #7fb8ee; }
+  .dot-ceb   { background: rgba(99,153,34,0.15);  color: #90c45a; }
+  .dot-crec  { background: rgba(239,159,39,0.15); color: #f0b96a; }
+  .dot-qlm   { background: rgba(212,83,126,0.15); color: #e68ab0; }
+  .dot-czr   { background: rgba(127,119,221,0.15);color: #a9a3e8; }
+  .dot-czrj  { background: rgba(226,75,74,0.15);  color: #f0908f; }
+
+  .tender-title {
+    font-size: 13px; font-weight: 500; color: var(--text);
+    line-height: 1.5; margin-bottom: 6px;
+  }
+  .tender-meta {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    font-size: 11px; color: var(--text2); align-items: center;
+  }
+  .tender-meta i { font-size: 12px; vertical-align: -1px; }
+  .tag {
+    padding: 2px 7px; border-radius: 4px;
+    font-size: 11px; font-weight: 500;
+    border: 0.5px solid var(--border2);
+    color: var(--text2); background: var(--bg3);
+  }
+  .tag.intl { background: rgba(29,158,117,0.12); color: var(--teal-light); border-color: rgba(93,202,165,0.25); }
+  .tag.dom  { background: rgba(55,138,221,0.12); color: #7fb8ee; border-color: rgba(55,138,221,0.25); }
+
+  .deadline-box { text-align: right; flex-shrink: 0; padding-top: 1px; }
+  .days-left { font-size: 16px; font-weight: 700; }
+  .days-left.urgent { color: var(--red); }
+  .days-left.soon   { color: var(--amber); }
+  .days-left.normal { color: var(--teal-light); }
+  .deadline-date  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .deadline-label { font-size: 10px; color: var(--text3); }
+
+  /* ── 新增按钮 ── */
+  .add-btn {
+    width: 100%; padding: 0.7rem;
+    border: 0.5px dashed var(--border2);
+    border-radius: var(--radius-lg);
+    background: transparent; color: var(--text2);
+    font-size: 13px; font-family: inherit; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background 0.15s, color 0.15s; margin-top: 8px;
+  }
+  .add-btn:hover { background: var(--bg3); color: var(--text); }
+
+  /* ── 弹窗 ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 200; align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border: 0.5px solid var(--border2);
+    border-radius: var(--radius-lg); padding: 1.5rem;
+    width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
+  }
+  .modal-title { font-size: 15px; font-weight: 700; }
+  .modal-close {
+    background: none; border: none; color: var(--text2);
+    font-size: 20px; cursor: pointer; padding: 4px; line-height: 1; border-radius: 6px;
+  }
+  .modal-close:hover { background: var(--bg3); color: var(--text); }
+  .form-group { margin-bottom: 1rem; }
+  .form-label { font-size: 12px; color: var(--text2); margin-bottom: 5px; display: block; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; background: var(--bg3);
+    border: 0.5px solid var(--border2); border-radius: var(--radius);
+    padding: 9px 12px; color: var(--text); font-size: 13px;
+    font-family: inherit; outline: none; transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--teal); }
+  .form-textarea { min-height: 70px; resize: vertical; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-primary {
+    width: 100%; padding: 10px; background: var(--teal); color: #fff;
+    border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500;
+    font-family: inherit; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-primary:hover { background: var(--teal-dark); }
+
+  /* ── 底部 ── */
+  .footer {
+    margin-top: 2rem; padding-top: 1rem;
+    border-top: 0.5px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  .footer-note { font-size: 11px; color: var(--text3); }
+  .source-links { display: flex; gap: 14px; flex-wrap: wrap; }
+  .source-link {
+    color: var(--text2); font-size: 11px; text-decoration: none;
+    display: flex; align-items: center; gap: 3px; transition: color 0.15s;
+  }
+  .source-link:hover { color: var(--teal-light); }
+
+  /* ── 空状态 ── */
+  .empty-state {
+    display: none; text-align: center; padding: 2.5rem 1rem;
+    color: var(--text3); font-size: 13px;
+  }
+  .empty-state i { font-size: 32px; margin-bottom: 8px; display: block; }
+
+  /* ── 响应式 ── */
+  @media (max-width: 640px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .nav-sub { display: none; }
+    .tender-card { grid-template-columns: 30px 1fr auto; }
+    .platform-dot { width: 30px; height: 30px; font-size: 10px; }
+    .tender-title { font-size: 12.5px; }
+    .form-row { grid-template-columns: 1fr; }
+    .footer { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 400px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .deadline-box { display: none; }
+    .filter-btn { font-size: 11px; padding: 4px 10px; }
+  }
+
+  /* ── 查看链接 ── */
+  .link-btn {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; color: var(--teal-light);
+    text-decoration: none; padding: 2px 7px;
+    border: 0.5px solid rgba(93,202,165,0.3);
+    border-radius: 4px; background: rgba(29,158,117,0.08);
+    transition: background 0.15s;
+  }
+  .link-btn:hover { background: rgba(29,158,117,0.2); }
+  .link-btn i { font-size: 11px; }
+
+  /* ── 提示条 ── */
+  .toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    background: var(--teal-dark); color: #fff;
+    padding: 10px 16px; border-radius: var(--radius);
+    font-size: 13px; display: flex; align-items: center; gap: 8px;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s; z-index: 300;
+    border: 0.5px solid rgba(93,202,165,0.3);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo"><i class="ti ti-building-factory-2"></i></div>
+    <div>
+      <div class="nav-title">招标信息跟踪平台</div>
+      <div class="nav-sub">上海藕荷信息科技有限公司 · 战略业务部</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-time" id="navTime"></span>
+    <span class="badge-live">实时跟踪</span>
+  </div>
+</nav>
+
+<!-- 主体 -->
+<div class="container">
+
+  <!-- 数据统计 -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-files"></i> 跟踪中标项</div>
+      <div class="stat-value teal" id="statTotal">0</div>
+      <div class="stat-delta">全平台合计</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-alarm"></i> 7天内截止</div>
+      <div class="stat-value red" id="statUrgent">0</div>
+      <div class="stat-delta">需立即跟进</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-world"></i> 涉及境外</div>
+      <div class="stat-value teal" id="statIntl">0</div>
+      <div class="stat-delta">APEC + 非洲</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-trending-up"></i> 本月新增</div>
+      <div class="stat-value" id="statNew">0</div>
+      <div class="stat-delta" id="statMonth"></div>
+    </div>
+  </div>
+
+  <!-- 筛选 -->
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all',this)">全部</button>
+    <button class="filter-btn" onclick="setFilter('intl',this)">境外项目</button>
+    <button class="filter-btn" onclick="setFilter('dom',this)">国内项目</button>
+    <button class="filter-btn" onclick="setFilter('urgent',this)">即将截止</button>
+    <button class="filter-btn" onclick="setFilter('ship',this)">船舶·重工</button>
+    <button class="filter-btn" onclick="setFilter('rail',this)">铁路·交通</button>
+    <button class="filter-btn" onclick="setFilter('energy',this)">能源·电力</button>
+    <button class="filter-btn" onclick="setFilter('esg',this)">ESG·咨询</button>
+  </div>
+
+  <!-- 列表标题 -->
+  <div class="section-header">
+    <span class="section-label">重点跟踪标项</span>
+    <span class="section-label" id="countLabel"></span>
+  </div>
+
+  <!-- 标项列表 -->
+  <div class="tender-list" id="tenderList"></div>
+  <div class="empty-state" id="emptyState">
+    <i class="ti ti-search-off"></i>
+    暂无符合条件的标项
+  </div>
+
+  <button class="add-btn" onclick="openModal()">
+    <i class="ti ti-plus"></i> 新增标项
+  </button>
+
+  <!-- 底部来源 -->
+  <div class="footer">
+    <div class="footer-note">数据请依各平台实际公告更新，示例数据仅供参考</div>
+    <div class="source-links">
+      <a href="http://ec.ceec.net.cn/" class="source-link" target="_blank"><i class="ti ti-external-link"></i>中国能建</a>
+      <a href="http://www.cebpubservice.com/" class="source-link" target="_blank"><i class="ti ti-external-link"></i>招标公服平台</a>
+      <a href="https://www.qianlima.com/" class="source-link" target="_blank"><i class="ti ti-external-link"></i>千里马招标网</a>
+      <a href="https://www.czcg.com/" class="source-link" target="_blank"><i class="ti ti-external-link"></i>采招网</a>
+      <a href="https://www.chinabidding.com.cn/" class="source-link" target="_blank"><i class="ti ti-external-link"></i>中铁采购网</a>
+    </div>
+  </div>
+</div>
+
+<!-- 新增弹窗 -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">新增标项</span>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">标项名称 *</label>
+      <textarea class="form-textarea" id="f-title" placeholder="请输入完整标项名称..." rows="2"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">来源平台</label>
+        <select class="form-select" id="f-platform">
+          <option value="ceec">中国能建电子采购平台</option>
+          <option value="ceb">中国招标投标公共服务平台</option>
+          <option value="crec">中国中铁采购网</option>
+          <option value="czrj">中国铁建采购平台</option>
+          <option value="qlm">千里马招标网</option>
+          <option value="czr">采招网</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">截止日期 *</label>
+        <input type="date" class="form-input" id="f-deadline">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">所在地区</label>
+        <input type="text" class="form-input" id="f-region" placeholder="如：几内亚·非洲">
+      </div>
+      <div class="form-group">
+        <label class="form-label">项目类型</label>
+        <select class="form-select" id="f-scope">
+          <option value="intl">境外项目</option>
+          <option value="dom">国内项目</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">标签（可多个，逗号分隔）</label>
+      <input type="text" class="form-input" id="f-tags" placeholder="如：铁路维保, EOR, 灵活用工">
+    </div>
+    <div class="form-group">
+      <label class="form-label">标项链接（可选）</label>
+      <input type="url" class="form-input" id="f-url" placeholder="https://...">
+    </div>
+    <button class="btn-primary" onclick="submitTender()">确认新增</button>
+  </div>
+</div>
+
+<!-- 提示条 -->
+<div class="toast" id="toast"><i class="ti ti-check"></i> <span id="toastMsg"></span></div>
+
+<script>
+const PLATFORMS = {
+  ceec: { label:'能建', cls:'dot-ceec' },
+  ceb:  { label:'招标', cls:'dot-ceb'  },
+  crec: { label:'中铁', cls:'dot-crec' },
+  czrj: { label:'铁建', cls:'dot-czrj' },
+  qlm:  { label:'千里马',cls:'dot-qlm' },
+  czr:  { label:'采招', cls:'dot-czr'  },
+};
+
+let tenders = [
+  { id:1, title:'几内亚西芒杜铁矿铁路沿线劳务人员配置及全流程托管服务采购', platform:'ceec', deadline:'2026-05-14', region:'几内亚·非洲', scope:'intl', tags:['rail','intl'], extraTags:['铁路维保'], addedMonth:5, url:'http://ec.ceec.net.cn/' },
+  { id:2, title:'泰国长安汽车罗勇府工厂投产期人力资源外包暨属地人才配置服务', platform:'ceb',  deadline:'2026-05-17', region:'泰国·APEC', scope:'intl', tags:['energy','intl'], extraTags:['EOR·制造'], addedMonth:5, url:'http://www.cebpubservice.com/' },
+  { id:3, title:'中车集团铁路货车定期维保作业人员劳务派遣及管理咨询框架协议', platform:'crec', deadline:'2026-05-20', region:'上海·国内', scope:'dom', tags:['rail','dom'], extraTags:['维保·派遣'], addedMonth:5, url:'https://www.chinabidding.com.cn/' },
+  { id:4, title:'爱达·花城号邮轮甲板部门技术人员招募及船员管理外包服务采购',  platform:'ceec', deadline:'2026-05-25', region:'上海·国内', scope:'dom', tags:['ship','dom'], extraTags:['船舶·RPO'], addedMonth:5, url:'http://ec.ceec.net.cn/' },
+  { id:5, title:'印尼南山铝业民丹岛项目属地员工技能培训及HRBP顾问服务',       platform:'ceb',  deadline:'2026-05-29', region:'印尼·APEC', scope:'intl', tags:['energy','intl'], extraTags:['HRBP·培训'], addedMonth:5, url:'http://www.cebpubservice.com/' },
+  { id:6, title:'上汽集团新能源车型生产线灵活用工及季节性外包整体解决方案',   platform:'qlm',  deadline:'2026-06-02', region:'上海·国内', scope:'dom', tags:['energy','dom'], extraTags:['灵活用工'], addedMonth:5, url:'https://www.qianlima.com/' },
+  { id:7, title:'宝武集团低碳冶金人才体系建设咨询及绿色制造ESG人才输送服务', platform:'czr',  deadline:'2026-06-08', region:'上海·国内', scope:'dom', tags:['esg','dom'], extraTags:['ESG·咨询'], addedMonth:5, url:'https://www.czcg.com/' },
+  { id:8, title:'中铁建新能源装备制造基地现场用工外包及智能制造人才输送协议', platform:'czrj', deadline:'2026-06-15', region:'宁夏·国内', scope:'dom', tags:['rail','energy','dom'], extraTags:['智能制造'], addedMonth:5, url:'https://www.chinabidding.com.cn/' },
+];
+let nextId = 9;
+let currentFilter = 'all';
+
+function daysLeft(dateStr) {
+  const d = new Date(dateStr);
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.round((d - today) / 86400000);
+}
+function urgencyClass(days) {
+  if (days <= 7)  return 'urgent';
+  if (days <= 14) return 'soon';
+  return 'normal';
+}
+
+function render() {
+  const list = document.getElementById('tenderList');
+  const empty = document.getElementById('emptyState');
+  list.innerHTML = '';
+  const now = new Date();
+  const thisMonth = now.getMonth() + 1;
+  let visible = 0;
+  const sorted = [...tenders].sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+
+  sorted.forEach(t => {
+    const days = daysLeft(t.deadline);
+    const urg  = urgencyClass(days);
+    if (!matchFilter(t, days)) return;
+    visible++;
+    const p = PLATFORMS[t.platform] || { label:'?', cls:'dot-czr' };
+    const scopeTag = t.scope === 'intl'
+      ? `<span class="tag intl">境外</span>`
+      : `<span class="tag dom">国内</span>`;
+    const extraTagsHtml = (t.extraTags||[]).map(x=>`<span class="tag">${x}</span>`).join('');
+    const daysLabel = days < 0 ? '已截止' : days === 0 ? '今日截止' : `${days}天`;
+    const card = document.createElement('div');
+    card.className = `tender-card ${urg}`;
+    card.dataset.id = t.id;
+    card.innerHTML = `
+      <div class="platform-dot ${p.cls}">${p.label}</div>
+      <div>
+        <div class="tender-title">${t.title}</div>
+        <div class="tender-meta">
+          <span><i class="ti ti-map-pin"></i> ${t.region}</span>
+          ${scopeTag}${extraTagsHtml}
+          <span>${platformName(t.platform)}</span>
+          ${t.url ? `<a class="link-btn" href="${t.url}" target="_blank" onclick="event.stopPropagation()"><i class="ti ti-external-link"></i> 查看原文</a>` : ''}
+        </div>
+      </div>
+      <div class="deadline-box">
+        <div class="days-left ${urg}">${daysLabel}</div>
+        <div class="deadline-date">${t.deadline.replace(/-/g,'/')}</div>
+        <div class="deadline-label">截止日期</div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  empty.style.display = visible === 0 ? 'block' : 'none';
+  const totalUrgent = tenders.filter(t => daysLeft(t.deadline) <= 7 && daysLeft(t.deadline) >= 0).length;
+  const totalIntl   = tenders.filter(t => t.scope === 'intl').length;
+  const totalNew    = tenders.filter(t => t.addedMonth === thisMonth).length;
+  document.getElementById('statTotal').textContent  = tenders.length;
+  document.getElementById('statUrgent').textContent = totalUrgent;
+  document.getElementById('statIntl').textContent   = totalIntl;
+  document.getElementById('statNew').textContent    = totalNew;
+  document.getElementById('statMonth').textContent  = `${thisMonth}月新增`;
+  document.getElementById('countLabel').textContent = visible > 0 ? `共 ${visible} 条` : '';
+}
+
+function matchFilter(t, days) {
+  switch(currentFilter) {
+    case 'all':    return true;
+    case 'intl':   return t.scope === 'intl';
+    case 'dom':    return t.scope === 'dom';
+    case 'urgent': return days >= 0 && days <= 7;
+    default:       return t.tags.includes(currentFilter);
+  }
+}
+
+function platformName(key) {
+  const names = {
+    ceec:'中国能建电子采购平台', ceb:'招标投标公共服务平台',
+    crec:'中国中铁采购网', czrj:'中国铁建采购平台',
+    qlm:'千里马招标网', czr:'采招网'
+  };
+  return names[key] || key;
+}
+
+function setFilter(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  const d = new Date(); d.setDate(d.getDate()+30);
+  document.getElementById('f-deadline').value = d.toISOString().split('T')[0];
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function submitTender() {
+  const title = document.getElementById('f-title').value.trim();
+  const deadline = document.getElementById('f-deadline').value;
+  if (!title || !deadline) { showToast('请填写标项名称及截止日期'); return; }
+  const platform = document.getElementById('f-platform').value;
+  const region   = document.getElementById('f-region').value.trim() || '待确认';
+  const scope    = document.getElementById('f-scope').value;
+  const tagsRaw  = document.getElementById('f-tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const url = document.getElementById('f-url').value.trim();
+  const tags = [scope];
+  const map = { '铁路':'rail', '船舶':'ship', '能源':'energy', '电力':'energy', 'ESG':'esg', '咨询':'esg' };
+  tagsRaw.forEach(t => { Object.keys(map).forEach(k => { if(t.includes(k)) tags.push(map[k]); }); });
+  const now = new Date();
+  tenders.push({
+    id: nextId++, title, platform, deadline, region, scope,
+    tags: [...new Set(tags)], extraTags: tagsRaw.slice(0,2), url: url || '',
+    addedMonth: now.getMonth() + 1
+  });
+  closeModal();
+  render();
+  showToast('标项已成功新增！');
+  ['f-title','f-region','f-tags','f-url'].forEach(id => document.getElementById(id).value = '');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function updateTime() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('navTime').textContent =
+    `${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+setInterval(updateTime, 1000);
+updateTime();
+render();
+</script>
+</body>
+</html>
