@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海外客户领导名录 · 上海藕荷信息科技</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --teal:#1B9C73;--teal-light:#E6F7F2;--teal-mid:#52C49A;--teal-dark:#0E6E50;--teal-border:#B3E8D6;
+  --gold:#D97706;--gold-light:#FEF3C7;--gold-border:#FCD34D;
+  --bg:#F7F8FA;--bg2:#FFFFFF;--bg3:#F1F3F6;--bg4:#E8EAED;
+  --border:#E4E7EC;--border2:#D0D5DD;
+  --text:#101828;--text2:#475467;--text3:#98A2B3;
+  --shadow:0 1px 3px rgba(16,24,40,0.08),0 1px 2px rgba(16,24,40,0.04);
+  --shadow-md:0 4px 8px rgba(16,24,40,0.08),0 2px 4px rgba(16,24,40,0.04);
+  --r:8px;--rl:12px;--rxl:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+.nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-logo{width:32px;height:32px;border-radius:8px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;}
+.nav-title{font-size:14px;font-weight:700;}
+.nav-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-time{font-size:12px;color:var(--text3);}
+.badge{font-size:11px;padding:3px 10px;background:var(--teal-light);color:var(--teal-dark);border:1px solid var(--teal-border);border-radius:999px;font-weight:500;}
+
+.container{max-width:1100px;margin:0 auto;padding:1.5rem 1.25rem;}
+
+.guide-banner{background:var(--teal-light);border:1px solid var(--teal-border);border-radius:var(--rl);padding:12px 16px;font-size:12px;color:var(--teal-dark);display:flex;align-items:flex-start;gap:10px;margin-bottom:1.25rem;line-height:1.6;}
+.guide-banner i{font-size:16px;flex-shrink:0;margin-top:1px;}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1rem 1.2rem;box-shadow:var(--shadow);}
+.stat-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.stat-label i{font-size:14px;color:var(--text3);}
+.stat-value{font-size:24px;font-weight:700;}
+.stat-value.teal{color:var(--teal);}
+.stat-value.gold{color:var(--gold);}
+.stat-delta{font-size:11px;color:var(--text3);margin-top:3px;}
+
+.country-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.country-tab{display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--border);border-radius:999px;background:var(--bg2);color:var(--text2);font-size:12px;font-family:inherit;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow);}
+.country-tab.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+.country-tab:hover:not(.active){background:var(--bg3);}
+.country-tab .flag{font-size:14px;}
+.cnt{font-size:10px;padding:1px 6px;background:rgba(0,0,0,0.07);border-radius:999px;font-weight:600;}
+.country-tab.active .cnt{background:rgba(255,255,255,0.25);}
+
+.toolbar{display:flex;gap:10px;margin-bottom:1.25rem;}
+.search-wrap{position:relative;flex:1;}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;}
+.search-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px 8px 34px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color 0.15s;box-shadow:var(--shadow);}
+.search-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(27,156,115,0.1);}
+.search-input::placeholder{color:var(--text3);}
+
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;}
+.section-label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.04em;}
+
+.company-group{margin-bottom:14px;}
+.company-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl) var(--rl) 0 0;cursor:pointer;transition:background 0.15s;box-shadow:var(--shadow);}
+.company-header:hover{background:var(--bg3);}
+.company-header.collapsed{border-radius:var(--rl);}
+.company-icon{width:30px;height:30px;border-radius:8px;background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.company-icon.gov{background:var(--gold-light);color:var(--gold);}
+.company-name{font-size:13px;font-weight:700;flex:1;}
+.company-count{font-size:11px;padding:2px 8px;background:var(--bg3);color:var(--text2);border-radius:999px;border:1px solid var(--border);}
+.company-arrow{font-size:14px;color:var(--text3);transition:transform 0.2s;}
+.company-header.collapsed .company-arrow{transform:rotate(-90deg);}
+
+.contacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--rl) var(--rl);}
+.contacts-grid.hidden{display:none;}
+
+.contact-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow);position:relative;}
+.contact-card:hover{border-color:var(--teal-border);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.contact-card.has-notes{border-left:3px solid var(--gold);}
+.contact-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.contact-avatar{width:36px;height:36px;border-radius:50%;background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+.contact-avatar.gov{background:var(--gold-light);color:var(--gold);}
+.contact-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.contact-title{font-size:11px;color:var(--text2);line-height:1.4;}
+.contact-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+.tag.gov{background:var(--gold-light);color:var(--gold);border-color:var(--gold-border);}
+.tag.corp{background:var(--teal-light);color:var(--teal-dark);border-color:var(--teal-border);}
+.tag.has-note{background:#FFF7ED;color:#C2410C;border-color:#FED7AA;}
+.notes-indicator{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--gold-light);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(16,24,40,0.45);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rxl);padding:1.5rem;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-md);}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;gap:10px;}
+.modal-info{display:flex;gap:12px;align-items:flex-start;flex:1;}
+.modal-avatar{width:48px;height:48px;border-radius:12px;background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
+.modal-avatar.gov{background:var(--gold-light);color:var(--gold);}
+.modal-name{font-size:17px;font-weight:700;margin-bottom:3px;}
+.modal-title-text{font-size:13px;color:var(--text2);margin-bottom:4px;}
+.modal-co{font-size:12px;color:var(--teal);display:inline-flex;align-items:center;gap:4px;}
+.modal-close{background:none;border:1px solid var(--border);border-radius:var(--r);color:var(--text2);font-size:16px;cursor:pointer;padding:5px 7px;flex-shrink:0;transition:all 0.15s;}
+.modal-close:hover{background:var(--bg3);}
+.divider{height:1px;background:var(--border);margin:.9rem 0;}
+.modal-sec-title{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+.notes-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;}
+.notes-box.has-content{background:#FFFBF5;border-color:var(--gold-border);color:var(--text);}
+
+.empty-state{text-align:center;padding:4rem 1rem;color:var(--text3);font-size:13px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--shadow);}
+.empty-state i{font-size:36px;margin-bottom:10px;display:block;}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:10px 16px;border-radius:var(--r);font-size:13px;display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:300;box-shadow:var(--shadow-md);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:640px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .nav-sub{display:none;}
+  .contacts-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo"><i class="ti ti-address-book"></i></div>
+    <div>
+      <div class="nav-title">海外客户领导名录</div>
+      <div class="nav-sub">上海藕荷信息科技有限公司 · 内部使用</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-time" id="navTime"></span>
+    <span class="badge">实时同步</span>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="guide-banner">
+    <i class="ti ti-info-circle"></i>
+    <div>
+      <strong>如何新增联系人：</strong>
+      在 Google 表格中新增一行，填写五列内容：
+      <strong>国家 / 单位名称 / 姓名 / 职称说明 / 核心关注点</strong>。
+      保存后刷新本页即自动更新。新增泰国、印尼等国家时，在「国家」列填入对应名称即可，页面会自动出现新的国家标签。
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-users"></i>联系人总数</div>
+      <div class="stat-value teal" id="statTotal">—</div>
+      <div class="stat-delta">全球合计</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-building"></i>覆盖单位</div>
+      <div class="stat-value" id="statCompany">—</div>
+      <div class="stat-delta">家企业/机构</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-world"></i>覆盖国家</div>
+      <div class="stat-value gold" id="statCountry">—</div>
+      <div class="stat-delta">个地区</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-notes"></i>含关键备注</div>
+      <div class="stat-value gold" id="statNotes">—</div>
+      <div class="stat-delta">条重要信息</div>
+    </div>
+  </div>
+
+  <div class="country-tabs" id="countryTabs"></div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="ti ti-search"></i>
+      <input class="search-input" id="searchInput" placeholder="搜索姓名、单位、职称、备注..." oninput="applyFilter()">
+    </div>
+  </div>
+
+  <div class="section-header">
+    <span class="section-label">联系人名录</span>
+    <span class="section-label" id="countLabel" style="color:var(--text3);font-weight:400"></span>
+  </div>
+
+  <div id="contactList"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <i class="ti ti-user-off"></i>暂无符合条件的联系人
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-info">
+        <div class="modal-avatar" id="mAv"></div>
+        <div>
+          <div class="modal-name" id="mName"></div>
+          <div class="modal-title-text" id="mTitle"></div>
+          <span class="modal-co" id="mCo"></span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="divider"></div>
+    <div class="modal-sec-title">核心关注点 / 备注</div>
+    <div class="notes-box" id="mNotes"></div>
+  </div>
+</div>
+<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toastMsg"></span></div>
+
+<script>
+const SHEETS = [
+  {name:'几内亚', flag:'🇬🇳', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=0'},
+  {name:'印尼',   flag:'🇮🇩', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=2141695950'},
+  {name:'泰国',   flag:'🇹🇭', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=330069565'},
+  {name:'马来西亚',flag:'🇲🇾', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=1632025582'},
+  {name:'新加坡', flag:'🇸🇬', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=599715427'},
+  {name:'墨西哥', flag:'🇲🇽', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=1926308415'},
+  {name:'巴西',   flag:'🇧🇷', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=418326907'},
+  {name:'阿联酋', flag:'🇦🇪', url:'https://docs.google.com/spreadsheets/d/1MhcNBVvi-sBB2cBx_qB-xdV61w7yHCjl-CIq8txCiwY/export?format=csv&gid=6276277'},
+];
+const FLAGS = {'几内亚':'🇬🇳','泰国':'🇹🇭','印尼':'🇮🇩','马来西亚':'🇲🇾','新加坡':'🇸🇬','澳洲':'🇦🇺','墨西哥':'🇲🇽','巴西':'🇧🇷','中东':'🌙','安哥拉':'🇦🇴','阿联酋':'🇦🇪','中国':'🇨🇳'};
+const PLACEHOLDER = SHEETS.map(s=>s.name);
+const FALLBACK = [
+  {country:'几内亚',company:'几内亚政府',name:'（劳工局局长）',title:'劳工局局长',notes:'Chery T2 254'},
+  {country:'几内亚',company:'几内亚政府',name:'高人 Tall tibou',title:'塔尔集团',notes:''},
+  {country:'几内亚',company:'海安控股',name:'张德峰',title:'非洲总经理 国际保安协会',notes:''},
+  {country:'几内亚',company:'海安控股',name:'郑斌',title:'',notes:''},
+  {country:'几内亚',company:'海安控股',name:'宫玮',title:'',notes:''},
+  {country:'几内亚',company:'中车',name:'张丰',title:'董事长＋法人代表',notes:''},
+  {country:'几内亚',company:'中车',name:'叶勇',title:'海外部长',notes:''},
+  {country:'几内亚',company:'中车',name:'张灿',title:'销售',notes:''},
+  {country:'几内亚',company:'中车',name:'林皓',title:'销售',notes:''},
+  {country:'几内亚',company:'中车',name:'冯总',title:'财务总监',notes:''},
+  {country:'几内亚',company:'中车',name:'傅总',title:'办公室主任',notes:''},
+  {country:'几内亚',company:'韦立',name:'萧亚龙',title:'行政主管',notes:''},
+  {country:'几内亚',company:'宝武',name:'江共养',title:'宝武资源 西忙度铁矿总指挥',notes:''},
+  {country:'几内亚',company:'宝武',name:'吴平',title:'宝武资源 几内亚副书记',notes:''},
+  {country:'几内亚',company:'宝武',name:'徐宝金',title:'宝武资源 几内亚办公室主任',notes:''},
+  {country:'几内亚',company:'宝武',name:'周铭',title:'欧冶云商 总裁副书记',notes:''},
+  {country:'几内亚',company:'宝武',name:'易力',title:'欧冶云商 供应链总经理',notes:''},
+  {country:'几内亚',company:'宝武',name:'赵佳悦',title:'欧冶云商 海外人事',notes:''},
+  {country:'几内亚',company:'镇江港',name:'陆卫兵',title:'总经理',notes:'1. 营运资质已在CTG报备\n2. 输送带维保（应急维修 / 定期保养）\n3. 食堂运营\n4. 外贸商品（货轮）\n5. 临江港区机械维修工/清料工（本地化比例高）\n6. 办公室看是否能租在同栋楼'},
+  {country:'几内亚',company:'台湾郑',name:'郑锦穗',title:'非洲钢铁发展公司（SODEFA）创始人',notes:'非洲钢铁发展公司（SODEFA）创于1993年，以轧钢为主，后直接进口钢材加工。每年进口钢材3万多吨，营业额3000多万美元，雇佣当地工人300余名。\n\n密林木材公司（Forêt Forte）2003年投产，总投资1600万美元，雇佣当地工人1000余名，系几内亚最大木材生产企业。'},
+  {country:'几内亚',company:'华为',name:'董骁',title:'政企负责人',notes:'1. 员工办银行卡！！跟银行签协议，董总推荐合适银行\n2. 赞助/冠名相关展会提升知名度（通常1万美金以下即可）\n3. 阿尔及利亚政府有很多中国公司标案可以关注\n4. 中铝 300w美金以下都是本地化决策可以关注\n5. Aboubacar Kourouma为劳工部部长＋社保局董事，经历四届政府轮换都在同样位置\n6. 几郎百亿规模以下可以找矿区＋理发店换，汇率好且方便\n7. 钻石广场都是几内亚政府搬迁方向，可作为办公室地点参考\n8. 建议不要合租，会产生很多问题'},
+  {country:'几内亚',company:'中铁',name:'任崇洋',title:'四局 八公司 几内亚副总',notes:''},
+  {country:'几内亚',company:'中铁',name:'明川',title:'二十一局 达盛铁路',notes:''},
+  {country:'几内亚',company:'三一重工',name:'蒋庆彬',title:'副总裁重装事业部董事长',notes:''},
+  {country:'几内亚',company:'徐工',name:'李姐',title:'',notes:''},
+  {country:'几内亚',company:'卡鲁姆酒店',name:'杨馥宁',title:'总经理',notes:''},
+  {country:'几内亚',company:'卡鲁姆酒店',name:'张鑫',title:'酒店办公室主任',notes:''},
+  {country:'几内亚',company:'卡鲁姆酒店',name:'张丹',title:'中餐厅经理',notes:''},
+  {country:'几内亚',company:'喜力水泥',name:'贵哥',title:'几内亚喜力水泥厂',notes:''},
+];
+
+let allData=[], curCountry='全部', searchText='';
+
+function splitLine(line){
+  const cols=[];let cur='',inQ=false;
+  for(const ch of line){
+    if(ch==='"'){inQ=!inQ;}
+    else if(ch===','&&!inQ){cols.push(cur);cur='';}
+    else cur+=ch;
+  }
+  cols.push(cur);
+  return cols.map(c=>c.replace(/^"|"$/g,'').trim());
+}
+
+function parseCSV(text, countryName){
+  const lines=text.trim().split('\n');
+  if(lines.length<2) return [];
+  const h=splitLine(lines[0]).map(x=>x.toLowerCase());
+  const iC=h.findIndex(x=>x.includes('国家'));
+  const iCo=h.findIndex(x=>x.includes('单位'));
+  const iN=h.findIndex(x=>x.includes('姓名'));
+  const iT=h.findIndex(x=>x.includes('职称')||x.includes('说明'));
+  const iNo=h.findIndex(x=>x.includes('关注')||x.includes('备注'));
+  const res=[];let lC=countryName||'几内亚',lCo='';
+  lines.slice(1).forEach(line=>{
+    const c=splitLine(line);
+    const country=iC>=0?(c[iC]||'').trim():'';
+    const company=iCo>=0?(c[iCo]||'').trim():'';
+    const name=iN>=0?(c[iN]||'').trim():'';
+    const title=iT>=0?(c[iT]||'').trim():'';
+    const notes=iNo>=0?(c[iNo]||'').trim():'';
+    if(country) lC=country;
+    if(company) lCo=company;
+    if(!name&&!title) return;
+    res.push({country:lC,company:lCo,name:name||'（待确认）',title,notes});
+  });
+  return res;
+}
+
+async function loadData(){
+  try{
+    const results = await Promise.allSettled(
+      SHEETS.map(s => fetch(s.url).then(r=>r.text()).then(text=>({sheet:s, text})))
+    );
+    const combined = [];
+    results.forEach(r=>{
+      if(r.status==='fulfilled'){
+        const {sheet, text} = r.value;
+        const rows = parseCSV(text, sheet.name);
+        combined.push(...rows);
+      }
+    });
+    allData = combined.length > 0 ? combined : FALLBACK.filter(d=>d.name);
+  }catch(e){
+    allData = FALLBACK.filter(d=>d.name);
+  }
+  renderAll();
+}
+
+function isGov(c){return['政府','局','部','委','署'].some(k=>c.includes(k));}
+function av(name){return(!name||name==='（待确认）')?'?':name.charAt(0);}
+
+function renderAll(){
+  // stats
+  const cos=new Set(allData.map(d=>d.company)).size;
+  const cus=new Set(allData.map(d=>d.country)).size;
+  const nts=allData.filter(d=>d.notes).length;
+  document.getElementById('statTotal').textContent=allData.length;
+  document.getElementById('statCompany').textContent=cos;
+  document.getElementById('statCountry').textContent=cus;
+  document.getElementById('statNotes').textContent=nts;
+  // tabs
+  const fromData=[...new Set(allData.map(d=>d.country))];
+  const all=['全部',...new Set([...fromData,...PLACEHOLDER])];
+  document.getElementById('countryTabs').innerHTML=all.map(c=>{
+    const cnt=c==='全部'?allData.length:allData.filter(d=>d.country===c).length;
+    const f=c==='全部'?'🌐':(FLAGS[c]||'🌍');
+    const dim=c!=='全部'&&cnt===0?'opacity:.45':'';
+    return `<button class="country-tab ${c===curCountry?'active':''}" style="${dim}" onclick="setC('${c}',this)">
+      <span class="flag">${f}</span>${c}<span class="cnt">${cnt}</span>
+    </button>`;
+  }).join('');
+  renderList();
+}
+
+function setC(c,btn){
+  curCountry=c;
+  document.querySelectorAll('.country-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function applyFilter(){
+  searchText=document.getElementById('searchInput').value.trim().toLowerCase();
+  renderList();
+}
+
+function renderList(){
+  const filtered=allData.filter(d=>{
+    const mc=curCountry==='全部'||d.country===curCountry;
+    const ms=!searchText||[d.name,d.company,d.title,d.notes].some(x=>x.toLowerCase().includes(searchText));
+    return mc&&ms;
+  });
+  const list=document.getElementById('contactList');
+  const empty=document.getElementById('emptyState');
+  list.innerHTML='';
+  if(filtered.length===0){empty.style.display='block';document.getElementById('countLabel').textContent='';return;}
+  empty.style.display='none';
+  document.getElementById('countLabel').textContent=`共 ${filtered.length} 人`;
+
+  const grouped={};
+  filtered.forEach(d=>{if(!grouped[d.company])grouped[d.company]=[];grouped[d.company].push(d);});
+
+  Object.entries(grouped).forEach(([co,contacts])=>{
+    const gov=isGov(co);
+    const g=document.createElement('div');g.className='company-group';
+    const hdr=document.createElement('div');hdr.className='company-header';
+    hdr.innerHTML=`<div class="company-icon ${gov?'gov':''}"><i class="ti ti-${gov?'landmark':'building'}"></i></div>
+      <span class="company-name">${co}</span>
+      <span class="company-count">${contacts.length} 人</span>
+      <i class="ti ti-chevron-down company-arrow"></i>`;
+    const grid=document.createElement('div');grid.className='contacts-grid';
+    hdr.onclick=()=>{hdr.classList.toggle('collapsed');grid.classList.toggle('hidden');};
+    contacts.forEach(c=>{
+      const card=document.createElement('div');
+      card.className=`contact-card${c.notes?' has-notes':''}`;
+      const gv=isGov(co);
+      card.innerHTML=`
+        ${c.notes?'<div class="notes-indicator"><i class="ti ti-notes"></i></div>':''}
+        <div class="contact-top">
+          <div class="contact-avatar ${gv?'gov':''}">${av(c.name)}</div>
+          <div><div class="contact-name">${c.name}</div><div class="contact-title">${c.title||'暂无职称'}</div></div>
+        </div>
+        <div class="contact-tags">
+          <span class="tag ${gv?'gov':'corp'}">${gv?'政府机构':'企业'}</span>
+          <span class="tag">${FLAGS[c.country]||'🌍'} ${c.country}</span>
+          ${c.notes?'<span class="tag has-note"><i class="ti ti-notes" style="font-size:10px;vertical-align:-1px"></i> 有备注</span>':''}
+        </div>`;
+      card.onclick=()=>openModal(c,co,gv);
+      grid.appendChild(card);
+    });
+    g.appendChild(hdr);g.appendChild(grid);list.appendChild(g);
+  });
+}
+
+function openModal(c,co,gov){
+  const a=document.getElementById('mAv');
+  a.textContent=av(c.name);a.className=`modal-avatar${gov?' gov':''}`;
+  document.getElementById('mName').textContent=c.name;
+  document.getElementById('mTitle').textContent=c.title||'暂无职称信息';
+  document.getElementById('mCo').innerHTML=`<i class="ti ti-map-pin" style="font-size:12px"></i> ${FLAGS[c.country]||''} ${c.country} · ${co}`;
+  const nb=document.getElementById('mNotes');
+  nb.textContent=c.notes||'暂无备注信息';
+  nb.className=`notes-box${c.notes?' has-content':''}`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function updateTime(){
+  const now=new Date(),pad=n=>String(n).padStart(2,'0');
+  document.getElementById('navTime').textContent=`${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+setInterval(updateTime,1000);updateTime();loadData();
+</script>
+</body>
+</html>
