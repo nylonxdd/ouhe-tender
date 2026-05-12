@@ -256,38 +256,68 @@ const FALLBACK = [
 
 let allData=[], curCountry='全部', searchText='';
 
-function splitLine(line){
-  const cols=[];let cur='',inQ=false;
-  for(const ch of line){
-    if(ch==='"'){inQ=!inQ;}
-    else if(ch===','&&!inQ){cols.push(cur);cur='';}
-    else cur+=ch;
-  }
-  cols.push(cur);
-  return cols.map(c=>c.replace(/^"|"$/g,'').trim());
-}
-
 function parseCSV(text, countryName){
-  const lines=text.trim().split('\n');
-  if(lines.length<2) return [];
-  const h=splitLine(lines[0]).map(x=>x.toLowerCase());
-  const iC=h.findIndex(x=>x.includes('国家'));
-  const iCo=h.findIndex(x=>x.includes('单位'));
-  const iN=h.findIndex(x=>x.includes('姓名'));
-  const iT=h.findIndex(x=>x.includes('职称')||x.includes('说明'));
-  const iNo=h.findIndex(x=>x.includes('关注')||x.includes('备注'));
-  const res=[];let lC=countryName||'几内亚',lCo='';
-  lines.slice(1).forEach(line=>{
-    const c=splitLine(line);
-    const country=iC>=0?(c[iC]||'').trim():'';
-    const company=iCo>=0?(c[iCo]||'').trim():'';
-    const name=iN>=0?(c[iN]||'').trim():'';
-    const title=iT>=0?(c[iT]||'').trim():'';
-    const notes=iNo>=0?(c[iNo]||'').trim():'';
+  // 正确解析CSV，支持多行单元格（带引号的字段可包含换行符）
+  const records = [];
+  let i = 0;
+  const len = text.length;
+
+  function parseField(){
+    let val = '';
+    if(i < len && text[i] === '"'){
+      i++; // skip opening quote
+      while(i < len){
+        if(text[i] === '"'){
+          if(i+1 < len && text[i+1] === '"'){ val += '"'; i+=2; } // escaped quote
+          else { i++; break; } // closing quote
+        } else {
+          val += text[i++];
+        }
+      }
+    } else {
+      while(i < len && text[i] !== ',' && text[i] !== '\n' && text[i] !== '\r'){
+        val += text[i++];
+      }
+    }
+    return val.trim();
+  }
+
+  function parseRecord(){
+    const fields = [];
+    while(i < len){
+      fields.push(parseField());
+      if(i < len && text[i] === ',') { i++; continue; }
+      if(i < len && text[i] === '\r') i++;
+      if(i < len && text[i] === '\n') i++;
+      break;
+    }
+    return fields;
+  }
+
+  while(i < len){
+    const rec = parseRecord();
+    if(rec.length > 0) records.push(rec);
+  }
+
+  if(records.length < 2) return [];
+  const h = records[0].map(x=>x.toLowerCase());
+  const iC  = h.findIndex(x=>x.includes('国家'));
+  const iCo = h.findIndex(x=>x.includes('单位'));
+  const iN  = h.findIndex(x=>x.includes('姓名'));
+  const iT  = h.findIndex(x=>x.includes('职称')||x.includes('说明'));
+  const iNo = h.findIndex(x=>x.includes('关注')||x.includes('备注'));
+
+  const res=[]; let lC=countryName||'几内亚', lCo='';
+  records.slice(1).forEach(c=>{
+    const country = iC>=0  ? (c[iC]||'').trim()  : '';
+    const company = iCo>=0 ? (c[iCo]||'').trim() : '';
+    const name    = iN>=0  ? (c[iN]||'').trim()  : '';
+    const title   = iT>=0  ? (c[iT]||'').trim()  : '';
+    const notes   = iNo>=0 ? (c[iNo]||'').trim() : '';
     if(country) lC=country;
     if(company) lCo=company;
     if(!name&&!title) return;
-    res.push({country:lC,company:lCo,name:name||'（待确认）',title,notes});
+    res.push({country:lC, company:lCo, name:name||'（待确认）', title, notes});
   });
   return res;
 }
