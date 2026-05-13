@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "几内亚西芒杜铁矿铁路沿线劳务人员配置及全流程托管服务采购",
+    "platform": "ceec",
+    "deadline": "2026-05-14",
+    "region": "几内亚·非洲",
+    "scope": "intl",
+    "tags": ["rail"],
+    "url": "http://ec.ceec.net.cn/"
+  },
+  {
+    "id": 2,
+    "title": "泰国长安汽车罗勇府工厂投产期人力资源外包暨属地人才配置服务",
+    "platform": "ceb",
+    "deadline": "2026-05-17",
+    "region": "泰国·APEC",
+    "scope": "intl",
+    "tags": ["energy"],
+    "url": "http://www.cebpubservice.com/"
+  },
+  {
+    "id": 3,
+    "title": "中车集团铁路货车定期维保作业人员劳务派遣及管理咨询框架协议",
+    "platform": "crec",
+    "deadline": "2026-05-20",
+    "region": "上海·国内",
+    "scope": "dom",
+    "tags": ["rail"],
+    "url": "https://www.chinabidding.com.cn/"
+  },
+  {
+    "id": 4,
+    "title": "爱达·花城号邮轮甲板部门技术人员招募及船员管理外包服务采购",
+    "platform": "ceec",
+    "deadline": "2026-05-25",
+    "region": "上海·国内",
+    "scope": "dom",
+    "tags": ["ship"],
+    "url": "http://ec.ceec.net.cn/"
+  },
+  {
+    "id": 5,
+    "title": "印尼南山铝业民丹岛项目属地员工技能培训及HRBP顾问服务",
+    "platform": "ceb",
+    "deadline": "2026-05-29",
+    "region": "印尼·APEC",
+    "scope": "intl",
+    "tags": ["energy"],
+    "url": "http://www.cebpubservice.com/"
+  },
+  {
+    "id": 6,
+    "title": "上汽集团新能源车型生产线灵活用工及季节性外包整体解决方案",
+    "platform": "qlm",
+    "deadline": "2026-06-02",
+    "region": "上海·国内",
+    "scope": "dom",
+    "tags": ["energy"],
+    "url": "https://www.qianlima.com/"
+  },
+  {
+    "id": 7,
+    "title": "宝武集团低碳冶金人才体系建设咨询及绿色制造ESG人才输送服务",
+    "platform": "czr",
+    "deadline": "2026-06-08",
+    "region": "上海·国内",
+    "scope": "dom",
+    "tags": ["esg"],
+    "url": "https://www.czcg.com/"
+  }
+]

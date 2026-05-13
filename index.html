@@ -290,6 +290,12 @@
     border: 0.5px solid rgba(93,202,165,0.3);
   }
   .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── 更新时间 ── */
+  .update-badge {
+    font-size: 11px; color: var(--text3);
+    display: flex; align-items: center; gap: 4px;
+  }
 </style>
 </head>
 <body>
@@ -367,7 +373,7 @@
 
   <!-- 底部来源 -->
   <div class="footer">
-    <div class="footer-note">数据请依各平台实际公告更新，示例数据仅供参考</div>
+    <div class="footer-note" id="updateTime">数据每日自动更新</div>
     <div class="source-links">
       <a href="http://ec.ceec.net.cn/" class="source-link" target="_blank"><i class="ti ti-external-link"></i>中国能建</a>
       <a href="http://www.cebpubservice.com/" class="source-link" target="_blank"><i class="ti ti-external-link"></i>招标公服平台</a>
@@ -421,7 +427,7 @@
     </div>
     <div class="form-group">
       <label class="form-label">标签（可多个，逗号分隔）</label>
-      <input type="text" class="form-input" id="f-tags" placeholder="如：铁路维保, EOR, 灵活用工">
+      <input type="text" class="form-input" id="f-tags" placeholder="如：rail, energy, esg, ship">
     </div>
     <div class="form-group">
       <label class="form-label">标项链接（可选）</label>
@@ -435,8 +441,6 @@
 <div class="toast" id="toast"><i class="ti ti-check"></i> <span id="toastMsg"></span></div>
 
 <script>
-const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSJnxw0uNfC_Gm7ZbaiJF6Shmm8uDe6EF11coWwpGyCcrrixCdv4SRsOXkLNgcwFzmz9LyAnEDPqnJv/pub?output=csv';
-
 const PLATFORMS = {
   ceec: { label:'能建', cls:'dot-ceec' },
   ceb:  { label:'招标', cls:'dot-ceb'  },
@@ -449,37 +453,19 @@ const PLATFORMS = {
 let tenders = [];
 let currentFilter = 'all';
 
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
-  return lines.slice(1).map((line, i) => {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let c of line) {
-      if (c === '"') { inQ = !inQ; }
-      else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else cur += c;
-    }
-    cols.push(cur.trim());
-    const obj = {};
-    headers.forEach((h, idx) => obj[h] = (cols[idx]||'').replace(/^"|"$/g,'').trim());
-    const scope = obj.scope || 'dom';
-    const tags = (obj.tags||'').split(/[,\s]+/).filter(Boolean);
-    if (!tags.includes(scope)) tags.push(scope);
-    return { id:i+1, title:obj.title||'', platform:obj.platform||'czr',
-      deadline:obj.deadline||'', region:obj.region||'', scope, tags,
-      extraTags:[], url:obj.url||'', addedMonth:new Date().getMonth()+1 };
-  }).filter(t => t.title);
-}
-
-async function loadFromSheet() {
+async function loadData() {
   try {
-    const res = await fetch(SHEET_CSV);
-    const text = await res.text();
-    tenders = parseCSV(text);
+    const res = await fetch('/data.json?t=' + Date.now());
+    tenders = await res.json();
     render();
+    // 显示更新时间
+    const meta = await fetch('/meta.json?t=' + Date.now()).then(r => r.json()).catch(() => null);
+    if (meta && meta.updated) {
+      document.getElementById('updateTime').textContent = '最后更新：' + meta.updated;
+    }
   } catch(e) {
     document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('emptyState').innerHTML = '<i class="ti ti-alert-circle"></i>数据加载失败，请刷新重试';
   }
 }
 
@@ -512,11 +498,12 @@ function render() {
     const scopeTag = t.scope === 'intl'
       ? `<span class="tag intl">境外</span>`
       : `<span class="tag dom">国内</span>`;
-    const extraTagsHtml = (t.extraTags||[]).map(x=>`<span class="tag">${x}</span>`).join('');
+    const extraTagsHtml = (t.tags||[])
+      .filter(x => x !== t.scope)
+      .map(x => `<span class="tag">${tagLabel(x)}</span>`).join('');
     const daysLabel = days < 0 ? '已截止' : days === 0 ? '今日截止' : `${days}天`;
     const card = document.createElement('div');
     card.className = `tender-card ${urg}`;
-    card.dataset.id = t.id;
     card.innerHTML = `
       <div class="platform-dot ${p.cls}">${p.label}</div>
       <div>
@@ -538,9 +525,13 @@ function render() {
   });
 
   empty.style.display = visible === 0 ? 'block' : 'none';
+  if (visible > 0) empty.innerHTML = '';
   const totalUrgent = tenders.filter(t => daysLeft(t.deadline) <= 7 && daysLeft(t.deadline) >= 0).length;
   const totalIntl   = tenders.filter(t => t.scope === 'intl').length;
-  const totalNew    = tenders.filter(t => t.addedMonth === thisMonth).length;
+  const totalNew    = tenders.filter(t => {
+    const d = new Date(t.deadline);
+    return d.getMonth() + 1 === thisMonth && d.getFullYear() === now.getFullYear();
+  }).length;
   document.getElementById('statTotal').textContent  = tenders.length;
   document.getElementById('statUrgent').textContent = totalUrgent;
   document.getElementById('statIntl').textContent   = totalIntl;
@@ -549,13 +540,18 @@ function render() {
   document.getElementById('countLabel').textContent = visible > 0 ? `共 ${visible} 条` : '';
 }
 
+function tagLabel(key) {
+  const map = { rail:'铁路', ship:'船舶', energy:'能源', esg:'ESG', intl:'境外', dom:'国内' };
+  return map[key] || key;
+}
+
 function matchFilter(t, days) {
   switch(currentFilter) {
     case 'all':    return true;
     case 'intl':   return t.scope === 'intl';
     case 'dom':    return t.scope === 'dom';
     case 'urgent': return days >= 0 && days <= 7;
-    default:       return t.tags.includes(currentFilter);
+    default:       return (t.tags||[]).includes(currentFilter);
   }
 }
 
@@ -588,7 +584,7 @@ function closeModalOutside(e) {
 }
 
 function submitTender() {
-  showToast('请直接在 Google 表格里新增一行，刷新页面即可更新 ↗');
+  showToast('新增请联系管理员更新数据文件');
   closeModal();
 }
 
@@ -607,7 +603,7 @@ function updateTime() {
 }
 setInterval(updateTime, 1000);
 updateTime();
-loadFromSheet();
+loadData();
 </script>
 </body>
 </html>
